@@ -16,7 +16,7 @@ spring:
   application:
     name: active-history-service
   profiles:
-    active: dev
+    active: prod
 
 logging:
   level:
