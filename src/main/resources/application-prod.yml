@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI_ACTIVE_HISTORY}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka
