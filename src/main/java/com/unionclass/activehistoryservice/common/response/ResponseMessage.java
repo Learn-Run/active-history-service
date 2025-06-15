@@ -7,8 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ResponseMessage {
 
-//    SUCCESS_SIGN_UP("회원가입에 성공하였습니다."),
-    ;
+    SUCCESS_GET_ACTIVE_HISTORY_INFORMATION("활동이력 정보 조회에 성공하였습니다.");
 
     private final String message;
 }

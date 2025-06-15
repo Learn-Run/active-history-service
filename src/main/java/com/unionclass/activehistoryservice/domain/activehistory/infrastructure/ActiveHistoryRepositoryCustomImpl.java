@@ -1,36 +1,62 @@
 package com.unionclass.activehistoryservice.domain.activehistory.infrastructure;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.unionclass.activehistoryservice.common.response.CursorPage;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiveHistoryResDto;
+import com.unionclass.activehistoryservice.domain.activehistory.entity.ActiveHistory;
 import com.unionclass.activehistoryservice.domain.activehistory.enums.ActiveHistoryType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
 public class ActiveHistoryRepositoryCustomImpl implements ActiveHistoryRepositoryCustom {
 
-    private final JPAQueryFactory queryFactory;
+    private final MongoTemplate mongoTemplate;
 
     @Override
-    public Page<GetActiveHistoryResDto> findByCursor(String memberUuid, String cursorId, int size) {
-        return null;
+    public CursorPage<GetActiveHistoryResDto> findByCursor(String memberUuid, ActiveHistoryType type, String cursorId, int page, int size) {
+
+        Query query = createBaseQuery(memberUuid, type);
+
+        query.addCriteria(Criteria.where("_id").lt(cursorId));
+        query.limit(size);
+
+        List<GetActiveHistoryResDto> result = mongoTemplate.find(query, ActiveHistory.class)
+                .stream().map(GetActiveHistoryResDto::from).toList();
+
+        String nextCursor = !result.isEmpty() ? result.get(result.size() - 1).getUuid() : null;
+        String prevCursor = !result.isEmpty() ? result.get(0).getUuid() : null;
+
+        return CursorPage.of(result, size, page, nextCursor, prevCursor);
     }
 
     @Override
-    public Page<GetActiveHistoryResDto> findByCursorAndType(String memberUuid, ActiveHistoryType type, String cursorId, int size) {
-        return null;
+    public String findCursorByOffset(String memberUuid, ActiveHistoryType type, int offset) {
+
+        Query query = createBaseQuery(memberUuid, type);
+
+        query.skip(offset).limit(1);
+        List<ActiveHistory> result = mongoTemplate.find(query, ActiveHistory.class);
+
+        return result.isEmpty() ? null : result.get(0).getId();
     }
 
-    @Override
-    public Page<GetActiveHistoryResDto> findByMemberUuid(String memberUuid, Pageable pageable) {
-        return null;
-    }
+    private Query createBaseQuery(String memberUuid, ActiveHistoryType type) {
 
-    @Override
-    public Page<GetActiveHistoryResDto> findByMemberUuidAndType(String memberUuid, ActiveHistoryType type, Pageable pageable) {
-        return null;
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("memberUuid").is(memberUuid));
+        if (type != null) {
+            query.addCriteria(Criteria.where("type").is(type));
+        }
+        query.with(Sort.by(Sort.Direction.DESC, "_id"));
+
+        return query;
     }
 }
