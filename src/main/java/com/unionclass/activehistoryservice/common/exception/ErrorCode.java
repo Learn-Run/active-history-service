@@ -99,6 +99,7 @@ public enum ErrorCode {
     // active history : 7000 ~ 7099
     INVALID_ACTIVE_HISTORY_TYPE_VALUE(HttpStatus.BAD_REQUEST, false, 7000, "유효하지 않은 활동이력 유형입니다."),
     FAILED_TO_SAVE_REVIEW_ACTIVE_HISTORY(HttpStatus.INTERNAL_SERVER_ERROR, false, 7001, "리뷰 활동이력 생성 및 저장에 실패하였습니다."),
+    FAILED_TO_LOAD_ACTIVE_HISTORY_INFORMATION(HttpStatus.INTERNAL_SERVER_ERROR, false, 7002, "활동이력 정보 조회에 실패하였습니다.")
     ;
 
     private final HttpStatus httpStatus;

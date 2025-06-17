@@ -3,7 +3,10 @@ package com.unionclass.activehistoryservice.domain.activehistory.application;
 import com.unionclass.activehistoryservice.common.exception.BaseException;
 import com.unionclass.activehistoryservice.common.exception.ErrorCode;
 import com.unionclass.activehistoryservice.common.kafka.entity.ReviewCreatedEvent;
+import com.unionclass.activehistoryservice.common.response.CursorPage;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.CreateReviewActiveHistoryDto;
+import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryReqDto;
+import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiveHistoryResDto;
 import com.unionclass.activehistoryservice.domain.activehistory.infrastructure.ActiveHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +29,32 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
             log.info("리뷰 활동이력 저장 성공 - memberUuid: {}, uuid: {}",
                     reviewCreatedEvent.getMemberUuid(), reviewCreatedEvent.getReviewId());
         } catch (Exception e) {
-            log.warn("리뷰 활동이력 저장 실패 - memberUuid: {}, uuid: {}",
-                    reviewCreatedEvent.getMemberUuid(), reviewCreatedEvent.getReviewId());
+            log.warn("리뷰 활동이력 저장 실패 - memberUuid: {}, uuid: {}, message: {}",
+                    reviewCreatedEvent.getMemberUuid(), reviewCreatedEvent.getReviewId(), e.getMessage(), e);
             throw new BaseException(ErrorCode.FAILED_TO_SAVE_REVIEW_ACTIVE_HISTORY);
+        }
+    }
+
+    @Override
+    public CursorPage<GetActiveHistoryResDto> getActiveHistory(GetActiveHistoryReqDto getActiveHistoryReqDto) {
+        try {
+            String cursor = getActiveHistoryReqDto.getCursorId() != null
+                    ? getActiveHistoryReqDto.getCursorId()
+                    : activeHistoryRepository.findCursorByOffset(
+                    getActiveHistoryReqDto.getMemberUuid(),
+                    getActiveHistoryReqDto.getType(),
+                    (getActiveHistoryReqDto.getPage() - 1) * getActiveHistoryReqDto.getSize());
+
+            return activeHistoryRepository.findByCursor(
+                    getActiveHistoryReqDto.getMemberUuid(),
+                    getActiveHistoryReqDto.getType(),
+                    cursor,
+                    getActiveHistoryReqDto.getPage(),
+                    getActiveHistoryReqDto.getSize());
+        } catch (Exception e) {
+            log.warn("활동 이력 조회 실패 - memberUuid: {}, message: {}",
+                    getActiveHistoryReqDto.getMemberUuid(), e.getMessage(), e);
+            throw new BaseException(ErrorCode.FAILED_TO_LOAD_ACTIVE_HISTORY_INFORMATION);
         }
     }
 }
