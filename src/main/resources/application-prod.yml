@@ -1,4 +1,12 @@
 spring:
+  kafka:
+    bootstrap-servers: ${EC2_HOST}:10000,${EC2_HOST}:10001,${EC2_HOST}:10002
+    consumer:
+      group-id: active-history-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
   data:
     mongodb:
       uri: ${MONGODB_URI_ACTIVE_HISTORY}
