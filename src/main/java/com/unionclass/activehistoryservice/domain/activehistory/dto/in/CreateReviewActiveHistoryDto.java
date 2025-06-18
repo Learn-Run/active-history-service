@@ -34,7 +34,7 @@ public class CreateReviewActiveHistoryDto {
     public static CreateReviewActiveHistoryDto from(ReviewCreatedEvent reviewCreatedEvent) {
         return CreateReviewActiveHistoryDto.builder()
                 .memberUuid(reviewCreatedEvent.getMemberUuid())
-                .type(ActiveHistoryType.TYPE_REVIEW)
+                .type(ActiveHistoryType.REVIEW)
                 .uuid(reviewCreatedEvent.getReviewId())
                 .createdAt(reviewCreatedEvent.getCreatedAt())
                 .updatedAt(reviewCreatedEvent.getUpdatedAt())
