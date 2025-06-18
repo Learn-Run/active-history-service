@@ -43,7 +43,7 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
                     : activeHistoryRepository.findCursorByOffset(
                     getActiveHistoryReqDto.getMemberUuid(),
                     getActiveHistoryReqDto.getType(),
-                    (getActiveHistoryReqDto.getPage() - 1) * getActiveHistoryReqDto.getSize());
+                    getActiveHistoryReqDto.getPage()  * getActiveHistoryReqDto.getSize());
 
             return activeHistoryRepository.findByCursor(
                     getActiveHistoryReqDto.getMemberUuid(),

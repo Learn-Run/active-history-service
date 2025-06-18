@@ -41,7 +41,7 @@ public class ActiveHistoryController {
                     
                     [요청 파라미터]
                     - cursorId : (String, 선택 입력) 커서 기준 ID (기본값 : null)
-                    - page : (int, 선택 입력) 현재 페이지 번호 (기본값 : 1)
+                    - page : (int, 선택 입력) 현재 페이지 번호 (기본값 : 0)
                     - size : (int, 선택 입력) 페이지당 조회 수 (기본값 : 9)
                     - type : (ActiveHistoryType, 선택입력) : 필터링할 활동 이력 타입, 미입력시 전체 조회
                     
@@ -57,7 +57,7 @@ public class ActiveHistoryController {
     public BaseResponseEntity<CursorPage<GetActiveHistoryResVo>> getActiveHistory(
             @PathVariable String memberUuid,
             @RequestParam(required = false) String cursorId,
-            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "9") int size,
             @RequestParam(required = false) ActiveHistoryType type
     ) {
