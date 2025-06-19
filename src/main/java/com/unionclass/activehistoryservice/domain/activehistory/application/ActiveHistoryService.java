@@ -1,6 +1,7 @@
 package com.unionclass.activehistoryservice.domain.activehistory.application;
 
-import com.unionclass.activehistoryservice.common.kafka.entity.ReviewCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
 import com.unionclass.activehistoryservice.common.response.CursorPage;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryCountReqDto;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryReqDto;
@@ -10,6 +11,7 @@ import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiv
 public interface ActiveHistoryService {
 
     void createReviewActiveHistory(ReviewCreatedEvent reviewCreatedEvent);
+    void createPostActiveHistory(PostCreatedEvent postCreatedEvent);
     CursorPage<GetActiveHistoryResDto> getActiveHistory(GetActiveHistoryReqDto getActiveHistoryReqDto);
     GetActiveHistoryCountResDto getActiveHistoryCount(GetActiveHistoryCountReqDto getActiveHistoryCountReqDto);
 }

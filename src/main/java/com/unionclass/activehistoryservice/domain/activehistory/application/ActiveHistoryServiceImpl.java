@@ -2,8 +2,10 @@ package com.unionclass.activehistoryservice.domain.activehistory.application;
 
 import com.unionclass.activehistoryservice.common.exception.BaseException;
 import com.unionclass.activehistoryservice.common.exception.ErrorCode;
-import com.unionclass.activehistoryservice.common.kafka.entity.ReviewCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
 import com.unionclass.activehistoryservice.common.response.CursorPage;
+import com.unionclass.activehistoryservice.domain.activehistory.dto.in.CreatePostActiveHistoryDto;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.CreateReviewActiveHistoryDto;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryCountReqDto;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryReqDto;
@@ -39,6 +41,20 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
                     reviewCreatedEvent.getMemberUuid(), reviewCreatedEvent.getReviewId(), e.getMessage(), e);
             throw new BaseException(ErrorCode.FAILED_TO_SAVE_REVIEW_ACTIVE_HISTORY);
         }
+    }
+
+    @Override
+    public void createPostActiveHistory(PostCreatedEvent postCreatedEvent) {
+        try {
+            activeHistoryRepository.save(CreatePostActiveHistoryDto.from(postCreatedEvent).toEntity());
+            log.info("질문 활동이력 저장 성공 - memberUuid: {}, uuid: {}",
+                    postCreatedEvent.getMemberUuid(), postCreatedEvent.getPostUuid());
+        } catch (Exception e) {
+            log.warn("질문 활동이력 저장 실패 - memberUuid: {}, uuid: {}, message: {}",
+                    postCreatedEvent.getMemberUuid(), postCreatedEvent.getPostUuid(), e.getMessage(), e);
+            throw new BaseException(ErrorCode.FAILED_TO_SAVE_POST_ACTIVE_HISTORY);
+        }
+
     }
 
     @Override

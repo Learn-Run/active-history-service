@@ -1,4 +1,4 @@
-package com.unionclass.activehistoryservice.common.kafka.entity;
+package com.unionclass.activehistoryservice.common.kafka.entity.event;
 
 import lombok.Builder;
 import lombok.Getter;

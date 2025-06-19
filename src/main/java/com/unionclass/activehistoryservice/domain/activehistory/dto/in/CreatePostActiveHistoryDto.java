@@ -1,6 +1,6 @@
 package com.unionclass.activehistoryservice.domain.activehistory.dto.in;
 
-import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
 import com.unionclass.activehistoryservice.domain.activehistory.entity.ActiveHistory;
 import com.unionclass.activehistoryservice.domain.activehistory.enums.ActiveHistoryType;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
-public class CreateReviewActiveHistoryDto {
+public class CreatePostActiveHistoryDto {
 
     private String memberUuid;
     private ActiveHistoryType type;
@@ -20,9 +20,8 @@ public class CreateReviewActiveHistoryDto {
     private LocalDateTime updatedAt;
 
     @Builder
-    public CreateReviewActiveHistoryDto(
-            String memberUuid, ActiveHistoryType type, String uuid,
-            LocalDateTime createdAt, LocalDateTime updatedAt
+    public CreatePostActiveHistoryDto(
+            String memberUuid, ActiveHistoryType type, String uuid, LocalDateTime createdAt, LocalDateTime updatedAt
     ) {
         this.memberUuid = memberUuid;
         this.type = type;
@@ -31,13 +30,13 @@ public class CreateReviewActiveHistoryDto {
         this.updatedAt = updatedAt;
     }
 
-    public static CreateReviewActiveHistoryDto from(ReviewCreatedEvent reviewCreatedEvent) {
-        return CreateReviewActiveHistoryDto.builder()
-                .memberUuid(reviewCreatedEvent.getMemberUuid())
-                .type(ActiveHistoryType.REVIEW)
-                .uuid(reviewCreatedEvent.getReviewId())
-                .createdAt(reviewCreatedEvent.getCreatedAt())
-                .updatedAt(reviewCreatedEvent.getUpdatedAt())
+    public static CreatePostActiveHistoryDto from(PostCreatedEvent postCreatedEvent) {
+        return CreatePostActiveHistoryDto.builder()
+                .memberUuid(postCreatedEvent.getMemberUuid())
+                .type(ActiveHistoryType.POST)
+                .uuid(postCreatedEvent.getPostUuid())
+                .createdAt(postCreatedEvent.getCreatedAt())
+                .updatedAt(postCreatedEvent.getUpdatedAt())
                 .build();
     }
 
