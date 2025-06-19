@@ -1,5 +1,6 @@
 package com.unionclass.activehistoryservice.common.kafka.util;
 
+import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
 import com.unionclass.activehistoryservice.domain.activehistory.application.ActiveHistoryService;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +29,20 @@ public class KafkaConsumer {
         log.info("리뷰 생성 이벤트 수신 - topic: {}, partition: {}, offset: {}",
                 consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
         activeHistoryService.createReviewActiveHistory(reviewCreatedEvent);
+    }
+
+    @KafkaListener(
+            topics = "post-create-send-read",
+            groupId = "active-history-group",
+            containerFactory = "postCreatedEventListener"
+    )
+    public void consumePostEvent(
+            PostCreatedEvent postCreatedEvent,
+            ConsumerRecord<String, PostCreatedEvent> consumerRecord
+    ) {
+        log.info("질문 생성 이벤트 수신 완료: {}", postCreatedEvent);
+        log.info("질문 생성 이벤트 수신 - topic: {}, partition: {}, offset: {}",
+                consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
+        activeHistoryService.createPostActiveHistory(postCreatedEvent);
     }
 }
