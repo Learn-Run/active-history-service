@@ -1,6 +1,6 @@
 package com.unionclass.activehistoryservice.common.kafka.util;
 
-import com.unionclass.activehistoryservice.common.kafka.entity.ReviewCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
 import com.unionclass.activehistoryservice.domain.activehistory.application.ActiveHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
