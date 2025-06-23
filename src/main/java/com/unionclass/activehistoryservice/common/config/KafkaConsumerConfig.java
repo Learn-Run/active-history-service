@@ -26,65 +26,65 @@ public class KafkaConsumerConfig {
     private String bootstrapServer;
 
     @Bean
-    public Map<String, Object> consumerConfigs() {
+    public Map<String, Object> consumerConfigs(Class<?> valueType) {
         Map<String, Object> config = new HashMap<>();
+
         config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         config.put(ConsumerConfig.GROUP_ID_CONFIG, "active-history-group");
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
         config.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        config.put(JsonDeserializer.VALUE_DEFAULT_TYPE, ReviewCreatedEvent.class);
+        config.put(JsonDeserializer.VALUE_DEFAULT_TYPE, valueType);
 
         return config;
     }
 
     @Bean
-    public ConsumerFactory<String, CommentCreatedEvent> commentCreatedEventConsumerFactory() {
+    public ConsumerFactory<String, CommentCreatedEvent> commentConsumerFactory() {
+
         return new DefaultKafkaConsumerFactory<>(
-                consumerConfigs(),
+                consumerConfigs(CommentCreatedEvent.class),
                 new StringDeserializer(),
-                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(CommentCreatedEvent.class, false))
-        );
+                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(CommentCreatedEvent.class, false)));
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, CommentCreatedEvent> commentCreatedEventListener() {
         ConcurrentKafkaListenerContainerFactory<String, CommentCreatedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(commentCreatedEventConsumerFactory());
+        factory.setConsumerFactory(commentConsumerFactory());
 
         return factory;
     }
 
     @Bean
-    public ConsumerFactory<String, ReviewCreatedEvent> reviewCreatedEventConsumerFactory() {
+    public ConsumerFactory<String, ReviewCreatedEvent> reviewConsumerFactory() {
+
         return new DefaultKafkaConsumerFactory<>(
-                consumerConfigs(),
+                consumerConfigs(ReviewCreatedEvent.class),
                 new StringDeserializer(),
-                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(ReviewCreatedEvent.class, false))
-        );
+                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(ReviewCreatedEvent.class, false)));
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, ReviewCreatedEvent> reviewCreatedEventListener() {
         ConcurrentKafkaListenerContainerFactory<String, ReviewCreatedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(reviewCreatedEventConsumerFactory());
+        factory.setConsumerFactory(reviewConsumerFactory());
 
         return factory;
     }
 
     @Bean
-    public ConsumerFactory<String, PostCreatedEvent> postCreatedEventConsumerFactory() {
+    public ConsumerFactory<String, PostCreatedEvent> postConsumerFactory() {
         return new DefaultKafkaConsumerFactory<>(
-                consumerConfigs(),
+                consumerConfigs(PostCreatedEvent.class),
                 new StringDeserializer(),
-                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(PostCreatedEvent.class, false))
-        );
+                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(PostCreatedEvent.class, false)));
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, PostCreatedEvent> postCreatedEventListener() {
         ConcurrentKafkaListenerContainerFactory<String, PostCreatedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(postCreatedEventConsumerFactory());
+        factory.setConsumerFactory(postConsumerFactory());
 
         return factory;
     }
