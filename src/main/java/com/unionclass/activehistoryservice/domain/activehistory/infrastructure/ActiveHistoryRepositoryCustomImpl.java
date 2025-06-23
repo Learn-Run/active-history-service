@@ -33,7 +33,10 @@ public class ActiveHistoryRepositoryCustomImpl implements ActiveHistoryRepositor
         String nextCursor = !result.isEmpty() ? result.get(result.size() - 1).getUuid() : null;
         String prevCursor = !result.isEmpty() ? result.get(0).getUuid() : null;
 
-        return CursorPage.of(result, size, page, nextCursor, prevCursor);
+        long totalCount = mongoTemplate.count(createBaseQuery(memberUuid, type), ActiveHistory.class);
+        int totalPage = (int) Math.ceil((double) totalCount / size);
+
+        return CursorPage.of(result, size, page, nextCursor, prevCursor, totalPage);
     }
 
     @Override
