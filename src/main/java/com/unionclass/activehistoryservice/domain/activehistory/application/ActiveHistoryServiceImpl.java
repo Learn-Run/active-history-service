@@ -4,7 +4,7 @@ import com.unionclass.activehistoryservice.common.exception.BaseException;
 import com.unionclass.activehistoryservice.common.exception.ErrorCode;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
-import com.unionclass.activehistoryservice.common.response.CursorPage;
+import com.unionclass.activehistoryservice.common.response.CustomPageImpl;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.CreatePostActiveHistoryDto;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.CreateReviewActiveHistoryDto;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryCountReqDto;
@@ -15,7 +15,7 @@ import com.unionclass.activehistoryservice.domain.activehistory.enums.ActiveHist
 import com.unionclass.activehistoryservice.domain.activehistory.infrastructure.ActiveHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,14 +59,14 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
     }
 
     @Override
-    public Page<GetActiveHistoryResDto> getActiveHistory(GetActiveHistoryReqDto getActiveHistoryReqDto) {
+    public CustomPageImpl<GetActiveHistoryResDto> getActiveHistory(GetActiveHistoryReqDto getActiveHistoryReqDto) {
         try {
 
-            return activeHistoryRepository.findByOffset(
+            return CustomPageImpl.from(
+                    activeHistoryRepository.findByOffset(
                     getActiveHistoryReqDto.getMemberUuid(),
                     getActiveHistoryReqDto.getType(),
-                    getActiveHistoryReqDto.getPage(),
-                    getActiveHistoryReqDto.getSize());
+                    PageRequest.of(getActiveHistoryReqDto.getPage(), getActiveHistoryReqDto.getSize())));
 
         } catch (Exception e) {
 

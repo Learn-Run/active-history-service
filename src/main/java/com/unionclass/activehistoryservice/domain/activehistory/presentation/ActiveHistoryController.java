@@ -1,6 +1,7 @@
 package com.unionclass.activehistoryservice.domain.activehistory.presentation;
 
 import com.unionclass.activehistoryservice.common.response.BaseResponseEntity;
+import com.unionclass.activehistoryservice.common.response.CustomPageImpl;
 import com.unionclass.activehistoryservice.common.response.ResponseMessage;
 import com.unionclass.activehistoryservice.domain.activehistory.application.ActiveHistoryService;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryCountReqDto;
@@ -13,7 +14,6 @@ import com.unionclass.activehistoryservice.domain.activehistory.vo.out.GetActive
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,7 +28,6 @@ public class ActiveHistoryController {
      * 1. 활동 이력 조회
      *
      * @param memberUuid
-     * @param cursorId
      * @param page
      * @param size
      * @param type
@@ -56,7 +55,7 @@ public class ActiveHistoryController {
                     """
     )
     @GetMapping("/{memberUuid}")
-    public BaseResponseEntity<Page<GetActiveHistoryResVo>> getActiveHistory(
+    public BaseResponseEntity<CustomPageImpl<GetActiveHistoryResVo>> getActiveHistory(
             @PathVariable String memberUuid,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "9") int size,

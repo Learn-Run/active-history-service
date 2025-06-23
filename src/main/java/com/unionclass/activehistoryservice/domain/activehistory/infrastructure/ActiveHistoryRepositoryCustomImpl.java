@@ -1,13 +1,11 @@
 package com.unionclass.activehistoryservice.domain.activehistory.infrastructure;
 
-import com.unionclass.activehistoryservice.common.response.CursorPage;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiveHistoryResDto;
 import com.unionclass.activehistoryservice.domain.activehistory.entity.ActiveHistory;
 import com.unionclass.activehistoryservice.domain.activehistory.enums.ActiveHistoryType;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -23,18 +21,19 @@ public class ActiveHistoryRepositoryCustomImpl implements ActiveHistoryRepositor
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public Page<GetActiveHistoryResDto> findByOffset(String memberUuid, ActiveHistoryType type, int page, int size) {
+    public PageImpl<GetActiveHistoryResDto> findByOffset(String memberUuid, ActiveHistoryType type, Pageable pageable) {
 
         Query query = createBaseQuery(memberUuid, type);
 
-        query.skip((long) page * size).limit(size);
+        query.with(pageable);
 
         List<GetActiveHistoryResDto> result = mongoTemplate.find(query, ActiveHistory.class)
                 .stream().map(GetActiveHistoryResDto::from).toList();
 
-        long totalCount = mongoTemplate.count(createBaseQuery(memberUuid, type), ActiveHistory.class);
+        long totalElements = mongoTemplate.count(createBaseQuery(memberUuid, type), ActiveHistory.class);
 
-        return new PageImpl<>(result, PageRequest.of(page, size), totalCount);
+        return new PageImpl<>(result, pageable, totalElements);
+
     }
 
     private Query createBaseQuery(String memberUuid, ActiveHistoryType type) {
