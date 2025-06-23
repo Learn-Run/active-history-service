@@ -10,25 +10,22 @@ import lombok.NoArgsConstructor;
 public class GetActiveHistoryReqDto {
 
     private String memberUuid;
-    private String cursorId;
     private int page;
     private int size;
     private ActiveHistoryType type;
 
     @Builder
-    public GetActiveHistoryReqDto(String memberUuid, String cursorId, int page, int size, ActiveHistoryType type) {
+    public GetActiveHistoryReqDto(String memberUuid, int page, int size, ActiveHistoryType type) {
         this.memberUuid = memberUuid;
-        this.cursorId = cursorId;
         this.page = page;
         this.size = size;
         this.type = type;
     }
 
     public static GetActiveHistoryReqDto of(
-            String memberUuid, String cursorId, int page, int size, ActiveHistoryType type) {
+            String memberUuid, int page, int size, ActiveHistoryType type) {
         return GetActiveHistoryReqDto.builder()
                 .memberUuid(memberUuid)
-                .cursorId(cursorId)
                 .page(page)
                 .size(size)
                 .type(type)

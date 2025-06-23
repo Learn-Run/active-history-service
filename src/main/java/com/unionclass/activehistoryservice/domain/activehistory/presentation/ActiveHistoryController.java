@@ -1,7 +1,6 @@
 package com.unionclass.activehistoryservice.domain.activehistory.presentation;
 
 import com.unionclass.activehistoryservice.common.response.BaseResponseEntity;
-import com.unionclass.activehistoryservice.common.response.CursorPage;
 import com.unionclass.activehistoryservice.common.response.ResponseMessage;
 import com.unionclass.activehistoryservice.domain.activehistory.application.ActiveHistoryService;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryCountReqDto;
@@ -14,6 +13,7 @@ import com.unionclass.activehistoryservice.domain.activehistory.vo.out.GetActive
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,28 +46,26 @@ public class ActiveHistoryController {
                     - cursorId : (String, 선택 입력) 커서 기준 ID (기본값 : null)
                     - page : (int, 선택 입력) 현재 페이지 번호 (기본값 : 0)
                     - size : (int, 선택 입력) 페이지당 조회 수 (기본값 : 9)
-                    - type : (ActiveHistoryType, 선택입력) : 필터링할 활동 이력 타입, 미입력시 전체 조회 (POST, COMMENT, REVIEW)
+                    - type : (ActiveHistoryType, 필수입력) : 필터링할 활동 이력 타입 (POST, COMMENT, REVIEW)
                     
                     [처리 로직]
-                    - cursorId 가 있으면 해당 커서부터 size 만큼 이력 조회
-                    - cursorId 가 없으면 offset 기반 커서를 구해서 해당 커서로 부터 size 만큼 이력 조회
+                    - offset 기반으로 size 만큼 이력 조회
                     
                     [예외 상황]
                     - FAILED_TO_LOAD_ACTIVE_HISTORY_INFORMATION: 활동이력 조회 중 예기치 못한 오류 발생
                     """
     )
     @GetMapping("/{memberUuid}")
-    public BaseResponseEntity<CursorPage<GetActiveHistoryResVo>> getActiveHistory(
+    public BaseResponseEntity<Page<GetActiveHistoryResVo>> getActiveHistory(
             @PathVariable String memberUuid,
-            @RequestParam(required = false) String cursorId,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "9") int size,
-            @RequestParam(required = false, defaultValue = "REVIEW") ActiveHistoryType type
+            @RequestParam ActiveHistoryType type
     ) {
         return new BaseResponseEntity<>(
                 ResponseMessage.SUCCESS_GET_ACTIVE_HISTORY_INFORMATION.getMessage(),
                 activeHistoryService.getActiveHistory(GetActiveHistoryReqDto
-                        .of(memberUuid, cursorId, page, size, type)).map(GetActiveHistoryResDto::toVo));
+                        .of(memberUuid, page, size, type)).map(GetActiveHistoryResDto::toVo));
     }
 
     /**

@@ -5,6 +5,9 @@ import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiv
 import com.unionclass.activehistoryservice.domain.activehistory.entity.ActiveHistory;
 import com.unionclass.activehistoryservice.domain.activehistory.enums.ActiveHistoryType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -20,34 +23,18 @@ public class ActiveHistoryRepositoryCustomImpl implements ActiveHistoryRepositor
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public CursorPage<GetActiveHistoryResDto> findByCursor(String memberUuid, ActiveHistoryType type, String cursorId, int page, int size) {
+    public Page<GetActiveHistoryResDto> findByOffset(String memberUuid, ActiveHistoryType type, int page, int size) {
 
         Query query = createBaseQuery(memberUuid, type);
 
-        query.addCriteria(Criteria.where("_id").lt(cursorId));
-        query.limit(size);
+        query.skip((long) page * size).limit(size);
 
         List<GetActiveHistoryResDto> result = mongoTemplate.find(query, ActiveHistory.class)
                 .stream().map(GetActiveHistoryResDto::from).toList();
 
-        String nextCursor = !result.isEmpty() ? result.get(result.size() - 1).getUuid() : null;
-        String prevCursor = !result.isEmpty() ? result.get(0).getUuid() : null;
-
         long totalCount = mongoTemplate.count(createBaseQuery(memberUuid, type), ActiveHistory.class);
-        int totalPage = (int) Math.ceil((double) totalCount / size);
 
-        return CursorPage.of(result, size, page, nextCursor, prevCursor, totalPage);
-    }
-
-    @Override
-    public String findCursorByOffset(String memberUuid, ActiveHistoryType type, int offset) {
-
-        Query query = createBaseQuery(memberUuid, type);
-
-        query.skip(offset).limit(1);
-        List<ActiveHistory> result = mongoTemplate.find(query, ActiveHistory.class);
-
-        return result.isEmpty() ? null : result.get(0).getId();
+        return new PageImpl<>(result, PageRequest.of(page, size), totalCount);
     }
 
     private Query createBaseQuery(String memberUuid, ActiveHistoryType type) {

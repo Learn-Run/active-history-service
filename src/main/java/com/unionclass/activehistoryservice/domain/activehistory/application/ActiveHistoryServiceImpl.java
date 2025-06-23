@@ -15,6 +15,7 @@ import com.unionclass.activehistoryservice.domain.activehistory.enums.ActiveHist
 import com.unionclass.activehistoryservice.domain.activehistory.infrastructure.ActiveHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,22 +59,17 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
     }
 
     @Override
-    public CursorPage<GetActiveHistoryResDto> getActiveHistory(GetActiveHistoryReqDto getActiveHistoryReqDto) {
+    public Page<GetActiveHistoryResDto> getActiveHistory(GetActiveHistoryReqDto getActiveHistoryReqDto) {
         try {
-            String cursor = getActiveHistoryReqDto.getCursorId() != null
-                    ? getActiveHistoryReqDto.getCursorId()
-                    : activeHistoryRepository.findCursorByOffset(
-                    getActiveHistoryReqDto.getMemberUuid(),
-                    getActiveHistoryReqDto.getType(),
-                    getActiveHistoryReqDto.getPage()  * getActiveHistoryReqDto.getSize());
 
-            return activeHistoryRepository.findByCursor(
+            return activeHistoryRepository.findByOffset(
                     getActiveHistoryReqDto.getMemberUuid(),
                     getActiveHistoryReqDto.getType(),
-                    cursor,
                     getActiveHistoryReqDto.getPage(),
                     getActiveHistoryReqDto.getSize());
+
         } catch (Exception e) {
+
             log.warn("활동 이력 조회 실패 - memberUuid: {}, message: {}",
                     getActiveHistoryReqDto.getMemberUuid(), e.getMessage(), e);
             throw new BaseException(ErrorCode.FAILED_TO_LOAD_ACTIVE_HISTORY_INFORMATION);

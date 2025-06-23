@@ -7,11 +7,12 @@ import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActive
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryReqDto;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiveHistoryCountResDto;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiveHistoryResDto;
+import org.springframework.data.domain.Page;
 
 public interface ActiveHistoryService {
 
     void createReviewActiveHistory(ReviewCreatedEvent reviewCreatedEvent);
     void createPostActiveHistory(PostCreatedEvent postCreatedEvent);
-    CursorPage<GetActiveHistoryResDto> getActiveHistory(GetActiveHistoryReqDto getActiveHistoryReqDto);
+    Page<GetActiveHistoryResDto> getActiveHistory(GetActiveHistoryReqDto getActiveHistoryReqDto);
     GetActiveHistoryCountResDto getActiveHistoryCount(GetActiveHistoryCountReqDto getActiveHistoryCountReqDto);
 }
