@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Period {
 
-    TODAY("today"),
-    TOTAL("total"),
+    TODAY("TODAY"),
+    TOTAL("TOTAL"),
     ;
 
     private final String period;
