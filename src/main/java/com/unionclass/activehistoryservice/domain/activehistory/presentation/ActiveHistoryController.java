@@ -45,7 +45,7 @@ public class ActiveHistoryController {
                     - cursorId : (String, 선택 입력) 커서 기준 ID (기본값 : null)
                     - page : (int, 선택 입력) 현재 페이지 번호 (기본값 : 0)
                     - size : (int, 선택 입력) 페이지당 조회 수 (기본값 : 9)
-                    - type : (ActiveHistoryType, 필수입력) : 필터링할 활동 이력 타입 (POST, COMMENT, REVIEW)
+                    - type : (ActiveHistoryType, 필수입력) : 필터링할 활동 이력 타입 (POST, COMMENT, REVIEW_WRITE, REVIEW_RECEIVED)
                     
                     [처리 로직]
                     - offset 기반으로 size 만큼 이력 조회
@@ -93,7 +93,8 @@ public class ActiveHistoryController {
                     [응답 바디]
                     - postCount : 게시글 작성 활동 개수
                     - commentCount : 댓글 작성 활동 개수
-                    - reviewCount : 리뷰 작성 활동 개수
+                    - reviewWriteCount : 리뷰를 작성한 활동 개수
+                    - reviewReceivedCount : 리뷰에 작성된 활동 개수
                     - totalCount : 총 활동 개수
                     
                     [예외 상황]
