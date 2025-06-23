@@ -2,13 +2,11 @@ package com.unionclass.activehistoryservice.domain.activehistory.application;
 
 import com.unionclass.activehistoryservice.common.exception.BaseException;
 import com.unionclass.activehistoryservice.common.exception.ErrorCode;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentCreatedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
 import com.unionclass.activehistoryservice.common.response.CustomPageImpl;
-import com.unionclass.activehistoryservice.domain.activehistory.dto.in.CreatePostActiveHistoryDto;
-import com.unionclass.activehistoryservice.domain.activehistory.dto.in.CreateReviewActiveHistoryDto;
-import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryCountReqDto;
-import com.unionclass.activehistoryservice.domain.activehistory.dto.in.GetActiveHistoryReqDto;
+import com.unionclass.activehistoryservice.domain.activehistory.dto.in.*;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiveHistoryCountResDto;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiveHistoryResDto;
 import com.unionclass.activehistoryservice.domain.activehistory.enums.ActiveHistoryType;
@@ -54,6 +52,27 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
             log.warn("질문 활동이력 저장 실패 - memberUuid: {}, uuid: {}, message: {}",
                     postCreatedEvent.getMemberUuid(), postCreatedEvent.getPostUuid(), e.getMessage(), e);
             throw new BaseException(ErrorCode.FAILED_TO_SAVE_POST_ACTIVE_HISTORY);
+        }
+
+    }
+
+    @Override
+    public void createCommentActiveHistory(CommentCreatedEvent commentCreatedEvent) {
+
+        try {
+
+            activeHistoryRepository.save(CreateCommentActiveHistoryDto.from(commentCreatedEvent).toEntity());
+
+            log.info("댓글 활동이력 저장 성공 - memberUuid: {}, uuid: {}",
+                    commentCreatedEvent.getMemberUuid(), commentCreatedEvent.getCommentUuid());
+
+        } catch (Exception e) {
+
+            log.warn("댓글 활동이력 저장 실패 - memberUuid: {}, uuid: {}, message: {}",
+                    commentCreatedEvent.getMemberUuid(), commentCreatedEvent.getCommentUuid(), e.getMessage(), e);
+
+            throw new BaseException(ErrorCode.FAILED_TO_SAVE_COMMENT_ACTIVE_HISTORY);
+
         }
 
     }

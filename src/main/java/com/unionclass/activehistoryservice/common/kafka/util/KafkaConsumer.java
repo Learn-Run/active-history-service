@@ -1,5 +1,6 @@
 package com.unionclass.activehistoryservice.common.kafka.util;
 
+import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentCreatedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
 import com.unionclass.activehistoryservice.domain.activehistory.application.ActiveHistoryService;
@@ -15,6 +16,21 @@ import org.springframework.stereotype.Service;
 public class KafkaConsumer {
 
     private final ActiveHistoryService activeHistoryService;
+
+    @KafkaListener(
+            topics = "comment-created",
+            groupId = "active-history-group",
+            containerFactory = "commentCreatedEventListener"
+    )
+    public void consumeReviewEvent(
+            CommentCreatedEvent commentCreatedEvent,
+            ConsumerRecord<String, CommentCreatedEvent> consumerRecord
+    ) {
+        log.info("댓글 생성 이벤트 수신 완료: {}", commentCreatedEvent);
+        log.info("댓글 생성 이벤트 수신 - topic: {}, partition: {}, offset: {}",
+                consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
+        activeHistoryService.createCommentActiveHistory(commentCreatedEvent);
+    }
 
     @KafkaListener(
             topics = "review-created",

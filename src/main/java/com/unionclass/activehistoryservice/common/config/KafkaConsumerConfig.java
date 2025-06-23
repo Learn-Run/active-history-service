@@ -1,5 +1,6 @@
 package com.unionclass.activehistoryservice.common.config;
 
+import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentCreatedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -35,6 +36,23 @@ public class KafkaConsumerConfig {
         config.put(JsonDeserializer.VALUE_DEFAULT_TYPE, ReviewCreatedEvent.class);
 
         return config;
+    }
+
+    @Bean
+    public ConsumerFactory<String, CommentCreatedEvent> commentCreatedEventConsumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(
+                consumerConfigs(),
+                new StringDeserializer(),
+                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(CommentCreatedEvent.class, false))
+        );
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, CommentCreatedEvent> commentCreatedEventListener() {
+        ConcurrentKafkaListenerContainerFactory<String, CommentCreatedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(commentCreatedEventConsumerFactory());
+
+        return factory;
     }
 
     @Bean
