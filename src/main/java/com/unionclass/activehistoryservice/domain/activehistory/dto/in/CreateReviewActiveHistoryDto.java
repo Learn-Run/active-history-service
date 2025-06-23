@@ -31,10 +31,20 @@ public class CreateReviewActiveHistoryDto {
         this.updatedAt = updatedAt;
     }
 
-    public static CreateReviewActiveHistoryDto from(ReviewCreatedEvent reviewCreatedEvent) {
+    public static CreateReviewActiveHistoryDto forWriter(ReviewCreatedEvent reviewCreatedEvent) {
         return CreateReviewActiveHistoryDto.builder()
-                .memberUuid(reviewCreatedEvent.getMemberUuid())
-                .type(ActiveHistoryType.REVIEW)
+                .memberUuid(reviewCreatedEvent.getReviewerUuid())
+                .type(ActiveHistoryType.REVIEW_WRITE)
+                .uuid(reviewCreatedEvent.getReviewId())
+                .createdAt(reviewCreatedEvent.getCreatedAt())
+                .updatedAt(reviewCreatedEvent.getUpdatedAt())
+                .build();
+    }
+
+    public static CreateReviewActiveHistoryDto forReceiver(ReviewCreatedEvent reviewCreatedEvent) {
+        return CreateReviewActiveHistoryDto.builder()
+                .memberUuid(reviewCreatedEvent.getRevieweeUuid())
+                .type(ActiveHistoryType.REVIEW_RECEIVED)
                 .uuid(reviewCreatedEvent.getReviewId())
                 .createdAt(reviewCreatedEvent.getCreatedAt())
                 .updatedAt(reviewCreatedEvent.getUpdatedAt())

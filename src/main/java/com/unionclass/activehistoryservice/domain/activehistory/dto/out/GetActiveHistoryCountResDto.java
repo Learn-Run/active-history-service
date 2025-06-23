@@ -11,22 +11,29 @@ public class GetActiveHistoryCountResDto {
 
     private Long postCount;
     private Long commentCount;
-    private Long reviewCount;
+    private Long reviewWriteCount;
+    private Long reviewReceivedCount;
     private Long totalCount;
 
     @Builder
-    public GetActiveHistoryCountResDto(Long postCount, Long commentCount, Long reviewCount, Long totalCount) {
+    public GetActiveHistoryCountResDto(
+            Long postCount, Long commentCount, Long reviewWriteCount, Long reviewReceivedCount, Long totalCount
+    ) {
         this.postCount = postCount;
         this.commentCount = commentCount;
-        this.reviewCount = reviewCount;
+        this.reviewWriteCount = reviewWriteCount;
+        this.reviewReceivedCount = reviewReceivedCount;
         this.totalCount = totalCount;
     }
 
-    public static GetActiveHistoryCountResDto of(Long postCount, Long commentCount, Long reviewCount, Long totalCount) {
+    public static GetActiveHistoryCountResDto of(
+            Long postCount, Long commentCount, Long reviewWriteCount, Long reviewReceivedCount, Long totalCount
+    ) {
         return GetActiveHistoryCountResDto.builder()
                 .postCount(postCount)
                 .commentCount(commentCount)
-                .reviewCount(reviewCount)
+                .reviewWriteCount(reviewWriteCount)
+                .reviewReceivedCount(reviewReceivedCount)
                 .totalCount(totalCount)
                 .build();
     }
@@ -35,7 +42,8 @@ public class GetActiveHistoryCountResDto {
         return GetActiveHistoryCountResVo.builder()
                 .postCount(postCount)
                 .commentCount(commentCount)
-                .reviewCount(reviewCount)
+                .reviewWriteCount(reviewWriteCount)
+                .reviewReceivedCount(reviewReceivedCount)
                 .totalCount(totalCount)
                 .build();
     }

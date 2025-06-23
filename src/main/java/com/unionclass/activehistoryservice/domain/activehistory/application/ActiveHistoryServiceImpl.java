@@ -9,6 +9,7 @@ import com.unionclass.activehistoryservice.common.response.CustomPageImpl;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.*;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiveHistoryCountResDto;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiveHistoryResDto;
+import com.unionclass.activehistoryservice.domain.activehistory.entity.ActiveHistory;
 import com.unionclass.activehistoryservice.domain.activehistory.enums.ActiveHistoryType;
 import com.unionclass.activehistoryservice.domain.activehistory.infrastructure.ActiveHistoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +33,17 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
     @Override
     public void createReviewActiveHistory(ReviewCreatedEvent reviewCreatedEvent) {
         try {
-            activeHistoryRepository.save(CreateReviewActiveHistoryDto.from(reviewCreatedEvent).toEntity());
-            log.info("리뷰 활동이력 저장 성공 - memberUuid: {}, uuid: {}",
-                    reviewCreatedEvent.getMemberUuid(), reviewCreatedEvent.getReviewId());
+
+            activeHistoryRepository.save(CreateReviewActiveHistoryDto.forWriter(reviewCreatedEvent).toEntity());
+            activeHistoryRepository.save(CreateReviewActiveHistoryDto.forReceiver(reviewCreatedEvent).toEntity());
+
+            log.info("리뷰 활동이력 저장 성공 - 작성자: {}, 대상자: {}, uuid: {}",
+                    reviewCreatedEvent.getReviewerUuid(), reviewCreatedEvent.getRevieweeUuid(), reviewCreatedEvent.getReviewId());
+
         } catch (Exception e) {
-            log.warn("리뷰 활동이력 저장 실패 - memberUuid: {}, uuid: {}, message: {}",
-                    reviewCreatedEvent.getMemberUuid(), reviewCreatedEvent.getReviewId(), e.getMessage(), e);
+            log.warn("리뷰 활동이력 저장 실패 - 작성자: {}, 대상자: {}, uuid: {}, message: {}",
+                    reviewCreatedEvent.getReviewerUuid(), reviewCreatedEvent.getRevieweeUuid(),
+                    reviewCreatedEvent.getReviewId(), e.getMessage(), e);
             throw new BaseException(ErrorCode.FAILED_TO_SAVE_REVIEW_ACTIVE_HISTORY);
         }
     }
@@ -53,7 +59,6 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
                     postCreatedEvent.getMemberUuid(), postCreatedEvent.getPostUuid(), e.getMessage(), e);
             throw new BaseException(ErrorCode.FAILED_TO_SAVE_POST_ACTIVE_HISTORY);
         }
-
     }
 
     @Override
@@ -109,23 +114,27 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.POST, startOfDay, endOfDay);
                     Long commentCount = activeHistoryRepository.countByMemberUuidAndTypeAndCreatedAtBetween(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.COMMENT, startOfDay, endOfDay);
-                    Long reviewCount = activeHistoryRepository.countByMemberUuidAndTypeAndCreatedAtBetween(
-                            getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.REVIEW, startOfDay, endOfDay);
+                    Long reviewWriteCount = activeHistoryRepository.countByMemberUuidAndTypeAndCreatedAtBetween(
+                            getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.REVIEW_WRITE, startOfDay, endOfDay);
+                    Long reviewReceivedCount = activeHistoryRepository.countByMemberUuidAndTypeAndCreatedAtBetween(
+                            getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.REVIEW_RECEIVED, startOfDay, endOfDay);
                     Long totalCount = activeHistoryRepository.countByMemberUuidAndCreatedAtBetween(
                             getActiveHistoryCountReqDto.getMemberUuid(), startOfDay, endOfDay);
 
-                    return GetActiveHistoryCountResDto.of(postCount, commentCount, reviewCount, totalCount);
+                    return GetActiveHistoryCountResDto.of(postCount, commentCount, reviewWriteCount, reviewReceivedCount, totalCount);
                 }
                 case TOTAL -> {
                     Long postCount = activeHistoryRepository.countByMemberUuidAndType(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.POST);
                     Long commentCount = activeHistoryRepository.countByMemberUuidAndType(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.COMMENT);
-                    Long reviewCount = activeHistoryRepository.countByMemberUuidAndType(
-                            getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.REVIEW);
+                    Long reviewWriteCount = activeHistoryRepository.countByMemberUuidAndType(
+                            getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.REVIEW_WRITE);
+                    Long reviewReceivedCount = activeHistoryRepository.countByMemberUuidAndType(
+                            getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.REVIEW_RECEIVED);
                     Long totalCount = activeHistoryRepository.countByMemberUuid(getActiveHistoryCountReqDto.getMemberUuid());
 
-                    return GetActiveHistoryCountResDto.of(postCount, commentCount, reviewCount, totalCount);
+                    return GetActiveHistoryCountResDto.of(postCount, commentCount, reviewWriteCount, reviewReceivedCount, totalCount);
                 }
                 default -> throw new BaseException(ErrorCode.INVALID_PERIOD_VALUE);
             }
