@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ActiveHistoryType {
 
-    REVIEW("리뷰"),
-    POST("질문"),
-    COMMENT("댓글")
+    REVIEW("REVIEW"),
+    POST("POST"),
+    COMMENT("COMMENT")
     ;
 
     private final String type;

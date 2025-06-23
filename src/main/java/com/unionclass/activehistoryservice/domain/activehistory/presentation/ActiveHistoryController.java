@@ -62,7 +62,7 @@ public class ActiveHistoryController {
             @RequestParam(required = false) String cursorId,
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "9") int size,
-            @RequestParam(required = false) ActiveHistoryType type
+            @RequestParam(required = false, defaultValue = "REVIEW") ActiveHistoryType type
     ) {
         return new BaseResponseEntity<>(
                 ResponseMessage.SUCCESS_GET_ACTIVE_HISTORY_INFORMATION.getMessage(),
