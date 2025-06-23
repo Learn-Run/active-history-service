@@ -25,7 +25,6 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServer;
 
-    @Bean
     public Map<String, Object> consumerConfigs(Class<?> valueType) {
         Map<String, Object> config = new HashMap<>();
 
