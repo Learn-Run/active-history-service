@@ -22,7 +22,7 @@ public class KafkaConsumer {
             groupId = "active-history-group",
             containerFactory = "commentCreatedEventListener"
     )
-    public void consumeReviewEvent(
+    public void consumeCommentEvent(
             CommentCreatedEvent commentCreatedEvent,
             ConsumerRecord<String, CommentCreatedEvent> consumerRecord
     ) {
