@@ -103,7 +103,10 @@ public enum ErrorCode {
     INVALID_PERIOD_VALUE(HttpStatus.BAD_REQUEST, false, 7003, "유효하지 않은 기간 타입입니다."),
     FAILED_TO_GET_ACTIVE_HISTORY_COUNT(HttpStatus.INTERNAL_SERVER_ERROR, false, 7004, "활동이력 개수 조회에 실패하였습니다."),
     FAILED_TO_SAVE_POST_ACTIVE_HISTORY(HttpStatus.INTERNAL_SERVER_ERROR, false, 7005, "질문 활동이력 생성 및 저장에 실패하였습니다."),
-    FAILED_TO_SAVE_COMMENT_ACTIVE_HISTORY(HttpStatus.INTERNAL_SERVER_ERROR, false, 7006, "댓글 활동이력 생성 및 저장에 실패하였습니다.");
+    FAILED_TO_SAVE_COMMENT_ACTIVE_HISTORY(HttpStatus.INTERNAL_SERVER_ERROR, false, 7006, "댓글 활동이력 생성 및 저장에 실패하였습니다."),
+    FAILED_TO_FIND_ACTIVE_HISTORY_BY_MEMBER_UUID_AND_COMMENT_UUID(HttpStatus.BAD_REQUEST, false, 7007, "회원 UUID 와 댓글 UUID 로 활동 이력을 조회하는데 실패하였습니다."),
+    FAILED_TO_UPDATED_ACTIVE_HISTORY_DELETED_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, false, 7008, "활동 이력 삭제 상태 변경에 실패하였습니다."),
+    ;
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess;

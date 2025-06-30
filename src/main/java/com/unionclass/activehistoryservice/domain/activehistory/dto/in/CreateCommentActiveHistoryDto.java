@@ -16,14 +16,19 @@ public class CreateCommentActiveHistoryDto {
     private String memberUuid;
     private ActiveHistoryType type;
     private String uuid;
+    private Boolean deleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
-    public CreateCommentActiveHistoryDto(String memberUuid, ActiveHistoryType type, String uuid, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public CreateCommentActiveHistoryDto(
+            String memberUuid, ActiveHistoryType type, String uuid,
+            Boolean deleted, LocalDateTime createdAt, LocalDateTime updatedAt
+    ) {
         this.memberUuid = memberUuid;
         this.type = type;
         this.uuid = uuid;
+        this.deleted = deleted;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -33,6 +38,7 @@ public class CreateCommentActiveHistoryDto {
                 .memberUuid(commentCreatedEvent.getMemberUuid())
                 .type(ActiveHistoryType.COMMENT)
                 .uuid(commentCreatedEvent.getCommentUuid())
+                .deleted(commentCreatedEvent.getDeleted())
                 .createdAt(commentCreatedEvent.getCreatedAt())
                 .updatedAt(commentCreatedEvent.getUpdatedAt())
                 .build();
@@ -43,6 +49,7 @@ public class CreateCommentActiveHistoryDto {
                 .memberUuid(memberUuid)
                 .type(type)
                 .uuid(uuid)
+                .deleted(deleted)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .build();

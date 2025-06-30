@@ -5,11 +5,17 @@ import com.unionclass.activehistoryservice.domain.activehistory.enums.ActiveHist
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface ActiveHistoryRepository extends MongoRepository<ActiveHistory, String>, ActiveHistoryRepositoryCustom {
 
-    Long countByMemberUuidAndType(String memberUuid, ActiveHistoryType activeHistoryType);
-    Long countByMemberUuid(String memberUuid);
-    Long countByMemberUuidAndTypeAndCreatedAtBetween(String memberUuid, ActiveHistoryType type, LocalDateTime createdAtAfter, LocalDateTime createdAtBefore);
-    Long countByMemberUuidAndCreatedAtBetween(String memberUuid, LocalDateTime startOfDay, LocalDateTime endOfDay);
+    Optional<ActiveHistory> findByMemberUuidAndUuid(String memberUuid, String commentUuid);
+
+    Long countByMemberUuidAndTypeAndDeletedFalseAndCreatedAtBetween(String memberUuid, ActiveHistoryType activeHistoryType, LocalDateTime startOfDay, LocalDateTime endOfDay);
+
+    Long countByMemberUuidAndDeletedFalseAndCreatedAtBetween(String memberUuid, LocalDateTime startOfDay, LocalDateTime endOfDay);
+
+    Long countByMemberUuidAndTypeAndDeletedFalse(String memberUuid, ActiveHistoryType activeHistoryType);
+
+    Long countByMemberUuidAndDeletedFalse(String memberUuid);
 }

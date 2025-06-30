@@ -41,6 +41,8 @@ public class ActiveHistoryRepositoryCustomImpl implements ActiveHistoryRepositor
         Query query = new Query();
 
         query.addCriteria(Criteria.where("memberUuid").is(memberUuid));
+        query.addCriteria(Criteria.where("deleted").is(false));
+
         if (type != null) {
             query.addCriteria(Criteria.where("type").is(type));
         }

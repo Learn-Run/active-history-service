@@ -26,19 +26,26 @@ public class ActiveHistory {
     private ActiveHistoryType type;
     private String uuid;
 
+    private Boolean deleted;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
     public ActiveHistory(
-            String id, String memberUuid, ActiveHistoryType type,
-            String uuid, LocalDateTime createdAt, LocalDateTime updatedAt
+            String id, String memberUuid, ActiveHistoryType type, String uuid,
+            Boolean deleted, LocalDateTime createdAt, LocalDateTime updatedAt
     ) {
         this.id = id;
         this.memberUuid = memberUuid;
         this.type = type;
         this.uuid = uuid;
+        this.deleted = deleted;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public void delete(Boolean deleted) {
+        this.deleted = deleted;
     }
 }

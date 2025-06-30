@@ -36,7 +36,7 @@ public class ActiveHistoryController {
     @Operation(
             summary = "활동 이력 조회",
             description = """
-                    특정 회원의 활동 이력을 커서 기반 페이지네이션으로 조회합니다.
+                    특정 회원의 활동 이력을 오프셋 기반 페이지네이션으로 조회합니다.
                     
                     [요청 경로]
                     - PathVariable : (String) memberUuid - 조회 대상 회원 UUID

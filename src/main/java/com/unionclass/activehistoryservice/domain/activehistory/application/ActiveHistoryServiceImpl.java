@@ -3,6 +3,7 @@ package com.unionclass.activehistoryservice.domain.activehistory.application;
 import com.unionclass.activehistoryservice.common.exception.BaseException;
 import com.unionclass.activehistoryservice.common.exception.ErrorCode;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentDeletedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
 import com.unionclass.activehistoryservice.common.response.CustomPageImpl;
@@ -96,6 +97,7 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
 
             log.warn("활동 이력 조회 실패 - memberUuid: {}, message: {}",
                     getActiveHistoryReqDto.getMemberUuid(), e.getMessage(), e);
+
             throw new BaseException(ErrorCode.FAILED_TO_LOAD_ACTIVE_HISTORY_INFORMATION);
         }
     }
@@ -110,29 +112,29 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
                     LocalDateTime startOfDay = today.atStartOfDay();
                     LocalDateTime endOfDay = today.plusDays(1).atStartOfDay().minusNanos(1);
 
-                    Long postCount = activeHistoryRepository.countByMemberUuidAndTypeAndCreatedAtBetween(
+                    Long postCount = activeHistoryRepository.countByMemberUuidAndTypeAndDeletedFalseAndCreatedAtBetween(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.POST, startOfDay, endOfDay);
-                    Long commentCount = activeHistoryRepository.countByMemberUuidAndTypeAndCreatedAtBetween(
+                    Long commentCount = activeHistoryRepository.countByMemberUuidAndTypeAndDeletedFalseAndCreatedAtBetween(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.COMMENT, startOfDay, endOfDay);
-                    Long reviewWriteCount = activeHistoryRepository.countByMemberUuidAndTypeAndCreatedAtBetween(
+                    Long reviewWriteCount = activeHistoryRepository.countByMemberUuidAndTypeAndDeletedFalseAndCreatedAtBetween(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.REVIEW_WRITE, startOfDay, endOfDay);
-                    Long reviewReceivedCount = activeHistoryRepository.countByMemberUuidAndTypeAndCreatedAtBetween(
+                    Long reviewReceivedCount = activeHistoryRepository.countByMemberUuidAndTypeAndDeletedFalseAndCreatedAtBetween(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.REVIEW_RECEIVED, startOfDay, endOfDay);
-                    Long totalCount = activeHistoryRepository.countByMemberUuidAndCreatedAtBetween(
+                    Long totalCount = activeHistoryRepository.countByMemberUuidAndDeletedFalseAndCreatedAtBetween(
                             getActiveHistoryCountReqDto.getMemberUuid(), startOfDay, endOfDay);
 
                     return GetActiveHistoryCountResDto.of(postCount, commentCount, reviewWriteCount, reviewReceivedCount, totalCount);
                 }
                 case TOTAL -> {
-                    Long postCount = activeHistoryRepository.countByMemberUuidAndType(
+                    Long postCount = activeHistoryRepository.countByMemberUuidAndTypeAndDeletedFalse(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.POST);
-                    Long commentCount = activeHistoryRepository.countByMemberUuidAndType(
+                    Long commentCount = activeHistoryRepository.countByMemberUuidAndTypeAndDeletedFalse(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.COMMENT);
-                    Long reviewWriteCount = activeHistoryRepository.countByMemberUuidAndType(
+                    Long reviewWriteCount = activeHistoryRepository.countByMemberUuidAndTypeAndDeletedFalse(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.REVIEW_WRITE);
-                    Long reviewReceivedCount = activeHistoryRepository.countByMemberUuidAndType(
+                    Long reviewReceivedCount = activeHistoryRepository.countByMemberUuidAndTypeAndDeletedFalse(
                             getActiveHistoryCountReqDto.getMemberUuid(), ActiveHistoryType.REVIEW_RECEIVED);
-                    Long totalCount = activeHistoryRepository.countByMemberUuid(getActiveHistoryCountReqDto.getMemberUuid());
+                    Long totalCount = activeHistoryRepository.countByMemberUuidAndDeletedFalse(getActiveHistoryCountReqDto.getMemberUuid());
 
                     return GetActiveHistoryCountResDto.of(postCount, commentCount, reviewWriteCount, reviewReceivedCount, totalCount);
                 }
@@ -144,6 +146,34 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
             log.warn("활동 이력 개수 조회 실패 - memberUuid: {}, message: {}",
                     getActiveHistoryCountReqDto.getMemberUuid(), e.getMessage(), e);
             throw new BaseException(ErrorCode.FAILED_TO_GET_ACTIVE_HISTORY_COUNT);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deleteCommentActiveHistory(CommentDeletedEvent event) {
+
+        try {
+
+            ActiveHistory activeHistory = activeHistoryRepository
+                    .findByMemberUuidAndUuid(event.getMemberUuid(), event.getCommentUuid())
+                    .orElseThrow(
+                            () -> new BaseException(ErrorCode.FAILED_TO_FIND_ACTIVE_HISTORY_BY_MEMBER_UUID_AND_COMMENT_UUID)
+                    );
+
+            activeHistory.delete(event.getDeleted());
+
+            activeHistoryRepository.save(activeHistory);
+
+            log.info("활동 이력 삭제 상태 변경 성공 - memberUuid: {}, commentUuid: {}",
+                    event.getMemberUuid(), event.getCommentUuid());
+
+        } catch (Exception e) {
+
+            log.warn("활동 이력 삭제 상태 변경 실패 - memberUuid: {}, commentUuid: {}, message: {}",
+                    event.getMemberUuid(), event.getCommentUuid(), e.getMessage(), e);
+
+            throw new BaseException(ErrorCode.FAILED_TO_UPDATED_ACTIVE_HISTORY_DELETED_STATUS);
         }
     }
 }

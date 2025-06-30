@@ -1,6 +1,7 @@
 package com.unionclass.activehistoryservice.common.kafka.util;
 
 import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentDeletedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
 import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
 import com.unionclass.activehistoryservice.domain.activehistory.application.ActiveHistoryService;
@@ -22,7 +23,7 @@ public class KafkaConsumer {
             groupId = "active-history-group",
             containerFactory = "commentCreatedEventListener"
     )
-    public void consumeCommentEvent(
+    public void consumeCommentCreatedEvent(
             CommentCreatedEvent commentCreatedEvent,
             ConsumerRecord<String, CommentCreatedEvent> consumerRecord
     ) {
@@ -37,7 +38,7 @@ public class KafkaConsumer {
             groupId = "active-history-group",
             containerFactory = "reviewCreatedEventListener"
     )
-    public void consumeReviewEvent(
+    public void consumeReviewCreatedEvent(
             ReviewCreatedEvent reviewCreatedEvent,
             ConsumerRecord<String, ReviewCreatedEvent> consumerRecord
     ) {
@@ -52,7 +53,7 @@ public class KafkaConsumer {
             groupId = "active-history-group",
             containerFactory = "postCreatedEventListener"
     )
-    public void consumePostEvent(
+    public void consumePostCreatedEvent(
             PostCreatedEvent postCreatedEvent,
             ConsumerRecord<String, PostCreatedEvent> consumerRecord
     ) {
@@ -60,5 +61,20 @@ public class KafkaConsumer {
         log.info("질문 생성 이벤트 수신 - topic: {}, partition: {}, offset: {}",
                 consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
         activeHistoryService.createPostActiveHistory(postCreatedEvent);
+    }
+
+    @KafkaListener(
+            topics = "comment-deleted",
+            groupId = "active-history-group",
+            containerFactory = "commentDeletedEventListener"
+    )
+    public void consumeCommentDeletedEvent(
+            CommentDeletedEvent commentDeletedEvent,
+            ConsumerRecord<String, CommentDeletedEvent> consumerRecord
+    ) {
+        log.info("댓글 삭제 이벤트 수신 완료: {}", commentDeletedEvent);
+        log.info("댓글 삭제 이벤트 수신 - topic: {}, partition: {}, offset: {}",
+                consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
+        activeHistoryService.deleteCommentActiveHistory(commentDeletedEvent);
     }
 }
