@@ -46,7 +46,13 @@ public class ActiveHistoryRepositoryCustomImpl implements ActiveHistoryRepositor
         if (type != null) {
             query.addCriteria(Criteria.where("type").is(type));
         }
-        query.with(Sort.by(Sort.Direction.DESC, "_id"));
+//        query.with(Sort.by(Sort.Direction.DESC, "_id"));
+
+        if (type == ActiveHistoryType.POST) {
+            query.with(Sort.by(Sort.Direction.DESC, "postUuid"));
+        } else {
+            query.with(Sort.by(Sort.Direction.DESC, "_id"));
+        }
 
         return query;
     }
