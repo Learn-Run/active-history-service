@@ -1,12 +1,10 @@
 package com.unionclass.activehistoryservice.common.kafka.entity.event;
 
-import com.unionclass.activehistoryservice.common.kafka.entity.Image;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -18,7 +16,6 @@ public class PostCreatedEvent {
     private Long subCategoryId;
     private String title;
     private String contents;
-    private List<Image> images;
 
     private boolean blindStatus;
     private boolean deletedStatus;
@@ -34,7 +31,6 @@ public class PostCreatedEvent {
             Long subCategoryId,
             String title,
             String contents,
-            List<Image> images,
             boolean blindStatus,
             boolean deletedStatus,
             LocalDateTime createdAt,
@@ -46,7 +42,6 @@ public class PostCreatedEvent {
         this.subCategoryId = subCategoryId;
         this.title = title;
         this.contents = contents;
-        this.images = images;
         this.blindStatus = blindStatus;
         this.deletedStatus = deletedStatus;
         this.createdAt = createdAt;
