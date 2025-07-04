@@ -16,16 +16,19 @@ public class CreatePostActiveHistoryDto {
     private String memberUuid;
     private ActiveHistoryType type;
     private String uuid;
+    private Boolean deleted;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
     public CreatePostActiveHistoryDto(
-            String memberUuid, ActiveHistoryType type, String uuid, LocalDateTime createdAt, LocalDateTime updatedAt
+            String memberUuid, ActiveHistoryType type, String uuid,
+            Boolean deleted, LocalDateTime createdAt, LocalDateTime updatedAt
     ) {
         this.memberUuid = memberUuid;
         this.type = type;
         this.uuid = uuid;
+        this.deleted = deleted;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -35,6 +38,7 @@ public class CreatePostActiveHistoryDto {
                 .memberUuid(postCreatedEvent.getMemberUuid())
                 .type(ActiveHistoryType.POST)
                 .uuid(postCreatedEvent.getPostUuid())
+                .deleted(postCreatedEvent.isDeletedStatus())
                 .createdAt(postCreatedEvent.getCreatedAt())
                 .updatedAt(postCreatedEvent.getUpdatedAt())
                 .build();
@@ -45,6 +49,7 @@ public class CreatePostActiveHistoryDto {
                 .memberUuid(memberUuid)
                 .type(type)
                 .uuid(uuid)
+                .deleted(deleted)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .build();
