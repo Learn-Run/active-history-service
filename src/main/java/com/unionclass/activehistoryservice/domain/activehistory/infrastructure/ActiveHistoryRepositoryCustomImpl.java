@@ -41,11 +41,12 @@ public class ActiveHistoryRepositoryCustomImpl implements ActiveHistoryRepositor
         Query query = new Query();
 
         query.addCriteria(Criteria.where("memberUuid").is(memberUuid));
-        query.addCriteria(Criteria.where("deleted").is(false));
 
-        if (type != null) {
-            query.addCriteria(Criteria.where("type").is(type));
+        if(type == ActiveHistoryType.COMMENT || type == ActiveHistoryType.POST) {
+            query.addCriteria(Criteria.where("deleted").is(false));
         }
+
+        query.addCriteria(Criteria.where("type").is(type));
         query.with(Sort.by(Sort.Direction.DESC, "_id"));
 
         return query;
