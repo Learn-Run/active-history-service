@@ -18,4 +18,6 @@ public interface ActiveHistoryRepository extends MongoRepository<ActiveHistory, 
     Long countByMemberUuidAndTypeAndDeletedFalse(String memberUuid, ActiveHistoryType activeHistoryType);
 
     Long countByMemberUuidAndDeletedFalse(String memberUuid);
+
+    Optional<ActiveHistory> findByUuid(String postUuid);
 }

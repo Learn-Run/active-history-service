@@ -2,10 +2,7 @@ package com.unionclass.activehistoryservice.domain.activehistory.application;
 
 import com.unionclass.activehistoryservice.common.exception.BaseException;
 import com.unionclass.activehistoryservice.common.exception.ErrorCode;
-import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentCreatedEvent;
-import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentDeletedEvent;
-import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
-import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.*;
 import com.unionclass.activehistoryservice.common.response.CustomPageImpl;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.in.*;
 import com.unionclass.activehistoryservice.domain.activehistory.dto.out.GetActiveHistoryCountResDto;
@@ -172,6 +169,31 @@ public class ActiveHistoryServiceImpl implements ActiveHistoryService {
 
             log.warn("활동 이력 삭제 상태 변경 실패 - memberUuid: {}, commentUuid: {}, message: {}",
                     event.getMemberUuid(), event.getCommentUuid(), e.getMessage(), e);
+
+            throw new BaseException(ErrorCode.FAILED_TO_UPDATED_ACTIVE_HISTORY_DELETED_STATUS);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void deletedPostActiveHistory(PostDeletedEvent event) {
+
+        try {
+
+            ActiveHistory activeHistory = activeHistoryRepository.findByUuid(event.getPostUuid())
+                    .orElseThrow(() -> new BaseException(ErrorCode.FAILED_TO_FIND_ACTIVE_HISTORY_BY_POST_UUID));
+
+            activeHistory.delete();
+
+            activeHistoryRepository.save(activeHistory);
+
+            log.info("활동 이력 삭제 상태 변경 성공 - memberUuid: {}, postUuid: {}",
+                    activeHistory.getMemberUuid(), activeHistory.getUuid());
+
+        } catch (Exception e) {
+
+            log.warn("활동 이력 삭제 상태 변경 실패 - postUuid: {}, message: {}",
+                    event.getPostUuid(), e.getMessage(), e);
 
             throw new BaseException(ErrorCode.FAILED_TO_UPDATED_ACTIVE_HISTORY_DELETED_STATUS);
         }

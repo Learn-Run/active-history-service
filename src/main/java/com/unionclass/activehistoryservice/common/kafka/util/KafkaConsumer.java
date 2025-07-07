@@ -1,9 +1,6 @@
 package com.unionclass.activehistoryservice.common.kafka.util;
 
-import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentCreatedEvent;
-import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentDeletedEvent;
-import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
-import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.*;
 import com.unionclass.activehistoryservice.domain.activehistory.application.ActiveHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,6 +58,21 @@ public class KafkaConsumer {
         log.info("질문 생성 이벤트 수신 - topic: {}, partition: {}, offset: {}",
                 consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
         activeHistoryService.createPostActiveHistory(postCreatedEvent);
+    }
+
+    @KafkaListener(
+            topics = "post-delete-send-read",
+            groupId = "active-history-group",
+            containerFactory = "postDeletedEventListener"
+    )
+    public void consumePostDeletedEvent(
+            PostDeletedEvent postDeletedEvent,
+            ConsumerRecord<String, PostDeletedEvent> consumerRecord
+    ) {
+        log.info("질문 삭제 이벤트 수신 완료: {}", postDeletedEvent);
+        log.info("질문 삭제 이벤트 수신 - topic: {}, partition: {}, offset: {}",
+                consumerRecord.topic(), consumerRecord.partition(), consumerRecord.offset());
+        activeHistoryService.deletedPostActiveHistory(postDeletedEvent);
     }
 
     @KafkaListener(

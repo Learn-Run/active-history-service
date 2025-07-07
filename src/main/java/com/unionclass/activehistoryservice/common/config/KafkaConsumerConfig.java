@@ -1,9 +1,6 @@
 package com.unionclass.activehistoryservice.common.config;
 
-import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentCreatedEvent;
-import com.unionclass.activehistoryservice.common.kafka.entity.event.CommentDeletedEvent;
-import com.unionclass.activehistoryservice.common.kafka.entity.event.PostCreatedEvent;
-import com.unionclass.activehistoryservice.common.kafka.entity.event.ReviewCreatedEvent;
+import com.unionclass.activehistoryservice.common.kafka.entity.event.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -85,6 +82,24 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, PostCreatedEvent> postCreatedEventListener() {
         ConcurrentKafkaListenerContainerFactory<String, PostCreatedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(postConsumerFactory());
+
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, PostDeletedEvent> postDeletedEventConsumerFactory() {
+
+        return new DefaultKafkaConsumerFactory<>(
+                consumerConfigs(PostDeletedEvent.class),
+                new StringDeserializer(),
+                new ErrorHandlingDeserializer<>(new JsonDeserializer<>(PostDeletedEvent.class, false)));
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, PostDeletedEvent> postDeletedEventListener() {
+
+        ConcurrentKafkaListenerContainerFactory<String, PostDeletedEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(postDeletedEventConsumerFactory());
 
         return factory;
     }
